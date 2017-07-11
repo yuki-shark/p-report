@@ -15,6 +15,10 @@
 \sloppy
 
 \section{はじめに}
+将来的にヒューマノイドロボットが日常生活環境で動作する際、すぐにその環境に馴染んで本来持つパフォーマンスができることが望ましい。特定の環境下でしか動作できないのは望ましくない。
+現状、ある環境にロボットを適応させるには、その環境でのチューニングをしなければならないことが多い。
+また日常生活環境は常に変化する環境である。こうした外界の状況を把握するためにも
+
 
 本稿はプログレスレポートのテンプレートである\cite{Sakai}．
 
@@ -37,6 +41,48 @@
  \end{center}
 \end{figure}
 
+\section{ボレー動作実現へのアプローチ}
+ボールの軌道予測をする場合、環境中にカメラを複数台セットして軌道を予測するものもあるが、本研究では環境に依存しない動作生成を目指すため、ロボット自身にカメラを取り付けている
+ロボットによるバッティングでは高速カメラを使うアプローチ\cite{Ishikawa}と予測を用いるアプローチがあるが、ヒューマノイドの動作生成には時間が一定以上かかるという観点から、後者のアプローチを用いる
+三次元座標の計算はそれぞれの二次元座標上のボールの重心から計算している
+
+\section{実験}
+認識、軌道予測、動作生成の評価をするための実験を行った
+\subsection{実際のボール投球による認識と軌道予測実験}
+カメラ単体で実験
+結果
+
+\begin{figure}[tbh]
+ \begin{center}
+  \begin{minipage}{0.45\columnwidth}
+   \includegraphics[width=\columnwidth]{coordinates_graph_316.png}
+   \caption{座標の時間変化}
+   \label{figure:coords_graph}
+  \end{minipage}
+  \hspace{0.05\columnwidth}
+  \begin{minipage}{0.45\columnwidth}
+   \includegraphics[width=\columnwidth]{coordinates_graph_316.png}
+   \caption{軌道予測の時間変化}
+   \label{figure:est_graph}
+  \end{minipage}
+ \end{center}
+\end{figure}
+
+二次元画像上での位置はよく認識できているが三次元座標を計算しようとすると奥行き方向がガタガタになる
+動的な動きをするとカメラの非同期により同時刻に
+\subsection{ボール位置にラケットを差し出す動作生成実験}
+静的な物体の位置認識（x,y座標）は良く出来ていた
+連続してikを解いていたため腕がねじれていくなどの問題があった
+
+\section{今後の方針}
+いろいろやってみたけど軌道予測もうまくいかないし、ikを解くのにも時間がかかるし完全に予測して理想の動きをしてしかも時間内に動作を行うのは無理
+あらかじめ高速な複数の動作を準備しておいて、どれを呼び出すのかをできるだけ早く決める（逐次更新は難しい）
+\subsection{学習手法について}
+入力は初めのボールの座標を数点（これも正確とは限らない）、出力はどの動作を選びどのタイミングで再生するか
+三次元座標の時系列座標を入力、
+RNNなどを
+
+
 \begin{table}[tbh]
  \begin{center}
   \begin{tabular}{|l|r|} \hline
@@ -52,9 +98,6 @@
 
 \bibliographystyle{junsrt}
 \bibliography{p-report}
-
-
-
 
 
 \end{document}
