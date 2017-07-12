@@ -15,42 +15,76 @@
 \sloppy
 
 \section{はじめに}
-将来的にヒューマノイドロボットが日常生活環境で動作する際、すぐにその環境に馴染んで本来持つパフォーマンスができることが望ましい。特定の環境下でしか動作できないのは望ましくない。
-現状、ある環境にロボットを適応させるには、その環境でのチューニングをしなければならないことが多い。
-また日常生活環境は常に変化する環境である。こうした外界の状況を把握するためにも
+日常生活環境、特に室外環境で人間とロボットが共に過ごすためには、認識や行動の高速化が求められる。
+これらの素早い認識、行動が特に求められるのは主に動的環境下においてである。
+しかし、動的な環境で正確な認識が難しい、またシミュレータ上で完全なモデルが作成できないことから、ダイナミックな動きをするとシミュレータと実際の環境での差異が生じてしまう。
+そのため、実際の環境の不確実な情報からでも、ある程度適切な動作生成ができるようになることが必要である。
+
+高速な動作生成をしている先行研究として、石川ら\cite{Ishikawa}の高速バッティングの研究があるが、カメラとロボットが分離しおり、スタンドアローンでの行動実現を目指すためにはカメラをロボットに搭載する必要があり、この手法はそのまま適応できない。また寺澤ら\cite{Terasawa}の高速スイングはオフラインで軌道を生成してその動きを再生しており、認識に基づいた動作生成ができていない。
+
+本研究では、素早い認識と動作生成が求められる行動として、テニスのボレー動作を題材に選んだ。このような動作を実現するため、比較的速い動作が可能なヒューマノイドロボットであるJAXON2\cite{Kojima}を用いて研究を行う。
 
 
-本稿はプログレスレポートのテンプレートである\cite{Sakai}．
+%% 将来的にヒューマノイドロボットが日常生活環境で動作する際、すぐにその環境に馴染んで本来持つパフォーマンスができることが望ましい。特定の環境下でしか動作できないのは望ましくない。
+%% 現状、ある環境にロボットを適応させるには、その環境でのチューニングをしなければならないことが多い。
+%% また日常生活環境は常に変化する環境である。こうした外界の状況を把握するためにも
 
-本稿における「、」や「。」は、\verb|make pub|を実行することで、「，」や「．」に変更される。
 
-図は\figref{nowprinting}や\tabref{sample}として参照する．
+%% 本稿はプログレスレポートのテンプレートである\cite{Sakai}．
+
+%% 本稿における「、」や「。」は、\verb|make pub|を実行することで、「，」や「．」に変更される。
+
+%% 図は\figref{nowprinting}や\tabref{sample}として参照する．
+
+%% \begin{figure}[tbh]
+%%  \begin{center}
+%%   \begin{minipage}{0.3\columnwidth}
+%%    \includegraphics[width=\columnwidth]{nowprinting.eps}
+%%    \caption{eps図の参考例}
+%%   \end{minipage}
+%%   \hspace{0.15\columnwidth}
+%%   \begin{minipage}{0.3\columnwidth}
+%%    \includegraphics[width=\columnwidth]{dj.jpg}
+%%    \caption{jpg図の参考例}
+%%   \end{minipage}
+%%   \label{figure:nowprinting}
+%%  \end{center}
+%% \end{figure}
+
+\section{ボレー動作実現へのアプローチ}
+%% ボールの軌道予測をする場合、環境中にカメラを複数台セットして軌道を予測するものもあるが、本研究では環境に依存しない動作生成を目指すため、ロボット自身にカメラを取り付けている
+%% ロボットによるバッティングでは高速カメラを使うアプローチ\cite{Ishikawa}と予測を用いるアプローチがあるが、ヒューマノイドの動作生成には時間が一定以上かかるという観点から、後者のアプローチを用いる
+%% 三次元座標の計算はそれぞれの二次元座標上のボールの重心から計算している
+不確実な情報から
+\figref{system}
+入力を
 
 \begin{figure}[tbh]
  \begin{center}
-  \begin{minipage}{0.3\columnwidth}
-   \includegraphics[width=\columnwidth]{nowprinting.eps}
-   \caption{eps図の参考例}
+  \begin{minipage}{0.65\columnwidth}
+   \includegraphics[width=\columnwidth]{coordinates_graph_316.png}
+   \caption{システム構成図}
+   \label{figure:system}
   \end{minipage}
-  \hspace{0.15\columnwidth}
+  \hspace{0.02\columnwidth}
   \begin{minipage}{0.3\columnwidth}
-   \includegraphics[width=\columnwidth]{dj.jpg}
-   \caption{jpg図の参考例}
+   \includegraphics[width=\columnwidth]{jaxon2_appearance.png}
+   \caption{JAXON2}
+   \label{figure:est_graph}
   \end{minipage}
-  \label{figure:nowprinting}
  \end{center}
 \end{figure}
 
-\section{ボレー動作実現へのアプローチ}
-ボールの軌道予測をする場合、環境中にカメラを複数台セットして軌道を予測するものもあるが、本研究では環境に依存しない動作生成を目指すため、ロボット自身にカメラを取り付けている
-ロボットによるバッティングでは高速カメラを使うアプローチ\cite{Ishikawa}と予測を用いるアプローチがあるが、ヒューマノイドの動作生成には時間が一定以上かかるという観点から、後者のアプローチを用いる
-三次元座標の計算はそれぞれの二次元座標上のボールの重心から計算している
 
-\section{実験}
+
+
+\section{検証実験}
 認識、軌道予測、動作生成の評価をするための実験を行った
 \subsection{実際のボール投球による認識と軌道予測実験}
-カメラ単体で実験
-結果
+ボールの三次元座標がどの程度のノイズを含んだ不確実な情報になっているかを確かめるため、実際にボールを投げ、各時刻のボールの三次元座標を計算すると共に、線形回帰によりどの程度正確に軌道予測が行えるのかを調べた。
+動作生成を含まないため、カメラはロボットに搭載せずに実験を行った。
+
+\figref{coords_graph}はボールの三次元座標の時間変化をプロットしたものであるが、どれも細かく振動しており、特に奥行き方向の座標がうまく取れていないことがわかる。\figref{est_graph}は\figref{coords_graph}の時間変化から計算したカメラから1m先の奥行き方向に対して垂直な平面上のどの座標にボールが来るかを予測したものであるが、全く予測できていないことがわかる。
 
 \begin{figure}[tbh]
  \begin{center}
